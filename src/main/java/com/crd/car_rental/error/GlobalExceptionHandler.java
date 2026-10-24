@@ -54,4 +54,16 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ReservationOverlapException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(ReservationOverlapException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                "Validation Failed",
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }

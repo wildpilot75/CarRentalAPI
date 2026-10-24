@@ -1,20 +1,31 @@
 package com.crd.car_rental.config;
 
-import com.crd.car_rental.dto.CarUnitResponse;
 import com.crd.car_rental.model.CarEntity;
 import com.crd.car_rental.model.CarUnitEntity;
+import com.crd.car_rental.model.ReservationEntity;
 import com.crd.car_rental.repository.CarRepository;
 import com.crd.car_rental.model.CarType;
 import com.crd.car_rental.repository.CarUnitRepository;
+import com.crd.car_rental.repository.ReservationRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 @Configuration
 public class DataSeeder {
 
     @Bean
-    public CommandLineRunner initCarRepository(CarRepository carRepository, CarUnitRepository carUnitRepository) {
+    public CommandLineRunner initCarRepository(
+            CarRepository carRepository,
+            CarUnitRepository carUnitRepository,
+            ReservationRepository reservationRepository) {
         return args -> {
             if (carRepository.count() == 0) {
                 System.out.println("Seeding initial data...");
@@ -64,7 +75,7 @@ public class DataSeeder {
                 for (CarEntity car : carRepository.findAll()) {
                     for (int i = 1; i <= 2; i++) {
                         CarUnitEntity unit = new CarUnitEntity();
-                        unit.setCarEntityId(car.getId());
+                        unit.setCar(car);
                         unit.setVin(car.getMake().substring(0, 3).toUpperCase() + "-" +
                                 car.getModel().substring(0, 3).toUpperCase() + "-" +
                                 car.getId() + "-" + i);
@@ -73,6 +84,59 @@ public class DataSeeder {
                 }
 
                 System.out.println("Seeding car unit entity Complete");
+            }
+
+            if (reservationRepository.count() == 0) {
+                System.out.println("Seeding reservation data...");
+
+                Random random = new Random();
+                List<CarUnitEntity> units = carUnitRepository.findAll();
+
+                for (CarUnitEntity unit : units) {
+
+                    // Generate between 1 and 4 reservations
+                    int reservationCount = random.nextInt(4) + 1;
+
+                    Date lastEndDate = null;
+
+                    for (int i = 0; i < reservationCount; i++) {
+
+                        // Start date: today + 0–7 days
+                        long startOffsetDays = random.nextInt(7);
+                        Date startDate = Date.from(
+                                LocalDate.now().plusDays(startOffsetDays)
+                                        .atStartOfDay(ZoneId.systemDefault()).toInstant()
+                        );
+
+                        // Length: 1–5 days
+                        int lengthDays = random.nextInt(5) + 1;
+                        Date endDate = Date.from(
+                                LocalDate.now().plusDays(startOffsetDays + lengthDays)
+                                        .atStartOfDay(ZoneId.systemDefault()).toInstant()
+                        );
+
+                        // Ensure no overlap with previous reservation
+                        if (lastEndDate != null && !startDate.after(lastEndDate)) {
+                            startDate = Date.from(
+                                    lastEndDate.toInstant().plus(1, ChronoUnit.DAYS)
+                            );
+                            endDate = Date.from(
+                                    startDate.toInstant().plus(lengthDays, ChronoUnit.DAYS)
+                            );
+                        }
+
+                        lastEndDate = endDate;
+
+                        ReservationEntity reservation = new ReservationEntity();
+                        reservation.setCarUnit(unit);
+                        reservation.setStartDate(startDate);
+                        reservation.setEndDate(endDate);
+
+                        reservationRepository.save(reservation);
+                    }
+                }
+
+                System.out.println("Seeding reservation data complete");
             }
 
             System.out.println("Seeding complete.");

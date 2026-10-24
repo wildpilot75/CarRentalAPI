@@ -23,7 +23,7 @@ public class ReservationEntity {
         return id;
     }
 
-    public CarUnitEntity getCarUnitId() {
+    public CarUnitEntity getCarUnit() {
         return carUnit;
     }
 

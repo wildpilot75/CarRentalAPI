@@ -4,6 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record CarUnitUpdateRequest(
-        @NotNull Long carEntityId,
+        @NotNull Long carId,
         @NotBlank String vin) {
 }

@@ -12,7 +12,10 @@ public class CarUnitEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long carEntityId;
+    @ManyToOne
+    @JoinColumn(name = "car_id", nullable = false)
+    private CarEntity car;
+
     private String vin;
 
     @OneToMany(mappedBy = "carUnit", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -22,8 +25,8 @@ public class CarUnitEntity {
         return id;
     }
 
-    public Long getCarEntityId() {
-        return carEntityId;
+    public CarEntity getCar() {
+        return car;
     }
 
     public String getVin() {
@@ -38,8 +41,8 @@ public class CarUnitEntity {
         this.id = id;
     }
 
-    public void setCarEntityId(Long carEntityId) {
-        this.carEntityId = carEntityId;
+    public void setCar(CarEntity carEntity) {
+        this.car = carEntity;
     }
 
     public void setVin(String vin) {

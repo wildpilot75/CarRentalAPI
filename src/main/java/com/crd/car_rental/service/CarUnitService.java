@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @Service
 public class CarUnitService {
+
     private final CarUnitRepository carUnitRepository;
     private final CarRepository carRepository;
 
@@ -22,48 +23,50 @@ public class CarUnitService {
         this.carRepository = carRepository;
     }
 
-    public List<CarUnitResponse> getAll(Optional<Long> carEntityId, Optional<CarType> carType) {
+    public List<CarUnitResponse> getAll(Optional<Long> carId, Optional<CarType> carType) {
 
-        if (carEntityId.isPresent() && carType.isPresent()) {
-            Long id = carEntityId.get();
+        // Case 1 — both filters present → intersection
+        if (carId.isPresent() && carType.isPresent()) {
+            Long id = carId.get();
             CarType type = carType.get();
 
+            // Get all cars of that type
             List<Long> carIdsOfType = carRepository.getByCarType(type)
                     .stream()
                     .map(CarEntity::getId)
                     .toList();
 
+            // If the specific carId is NOT in the list → empty
             if (!carIdsOfType.contains(id)) {
                 return List.of();
             }
 
-            return carUnitRepository.getByCarEntityId(id)
+            // Otherwise return units for that car
+            return carUnitRepository.findByCar_Id(id)
                     .stream()
                     .map(this::mapToResponse)
                     .toList();
         }
 
+        // Case 2 — only carType
         if (carType.isPresent()) {
             CarType type = carType.get();
 
-            List<Long> carIdsOfType = carRepository.getByCarType(type)
-                    .stream()
-                    .map(CarEntity::getId)
-                    .toList();
-
-            return carUnitRepository.findByCarEntityIdIn(carIdsOfType)
+            return carUnitRepository.findByCar_CarType(type)
                     .stream()
                     .map(this::mapToResponse)
                     .toList();
         }
 
-        if (carEntityId.isPresent()) {
-            return carUnitRepository.getByCarEntityId(carEntityId.get())
+        // Case 3 — only carId
+        if (carId.isPresent()) {
+            return carUnitRepository.findByCar_Id(carId.get())
                     .stream()
                     .map(this::mapToResponse)
                     .toList();
         }
 
+        // Case 4 — no filters → return all
         return carUnitRepository.findAll()
                 .stream()
                 .map(this::mapToResponse)
@@ -71,16 +74,15 @@ public class CarUnitService {
     }
 
     public CarUnitResponse getById(Long id) {
-        return carUnitRepository
-                .findById(id)
+        return carUnitRepository.findById(id)
                 .map(this::mapToResponse)
                 .orElseThrow(() -> new NotFoundException("Car unit with id " + id + " does not exist"));
     }
 
-    public CarUnitResponse addCarUnit(CarUnitCreateRequest carUnitCreateRequest) {
-        CarUnitEntity carUnitEntity = new CarUnitEntity();
-        mapToEntity(carUnitCreateRequest, carUnitEntity);
-        CarUnitEntity saved =  carUnitRepository.save(carUnitEntity);
+    public CarUnitResponse addCarUnit(CarUnitCreateRequest request) {
+        CarUnitEntity entity = new CarUnitEntity();
+        mapToEntity(request, entity);
+        CarUnitEntity saved = carUnitRepository.save(entity);
         return mapToResponse(saved);
     }
 
@@ -89,9 +91,9 @@ public class CarUnitService {
             throw new NotFoundException("Car unit with id " + id + " does not exist");
         }
 
-        CarUnitEntity carUnitEntity = new CarUnitEntity();
-        mapToEntity(id, request, carUnitEntity);
-        CarUnitEntity saved = carUnitRepository.save(carUnitEntity);
+        CarUnitEntity entity = new CarUnitEntity();
+        mapToEntity(id, request, entity);
+        CarUnitEntity saved = carUnitRepository.save(entity);
         return mapToResponse(saved);
     }
 
@@ -102,23 +104,28 @@ public class CarUnitService {
         carUnitRepository.deleteById(id);
     }
 
-    private void mapToEntity(CarUnitCreateRequest request, CarUnitEntity carUnitEntity) {
-        carUnitEntity.setCarEntityId(request.carEntityId());
-        carUnitEntity.setVin(request.vin());
+    private void mapToEntity(CarUnitCreateRequest request, CarUnitEntity entity) {
+        CarEntity car = carRepository.findById(request.carId())
+                .orElseThrow(() -> new NotFoundException("Car not found with id " + request.carId()));
+
+        entity.setCar(car);
+        entity.setVin(request.vin());
     }
 
-    private void mapToEntity(Long id, CarUnitUpdateRequest request, CarUnitEntity carUnitEntity) {
-        carUnitEntity.setId(id);
-        carUnitEntity.setCarEntityId(request.carEntityId());
-        carUnitEntity.setVin(request.vin());
+    private void mapToEntity(Long id, CarUnitUpdateRequest request, CarUnitEntity entity) {
+        CarEntity car = carRepository.findById(request.carId())
+                .orElseThrow(() -> new NotFoundException("Car not found with id " + request.carId()));
+
+        entity.setId(id);
+        entity.setCar(car);
+        entity.setVin(request.vin());
     }
 
-    private CarUnitResponse mapToResponse(CarUnitEntity carUnitEntity) {
+    private CarUnitResponse mapToResponse(CarUnitEntity entity) {
         return new CarUnitResponse(
-                carUnitEntity.getId(),
-                carUnitEntity.getCarEntityId(),
-                carUnitEntity.getVin(),
-                carUnitEntity.getReservations()
+                entity.getId(),
+                entity.getCar().getId(),
+                entity.getVin()
         );
     }
 }

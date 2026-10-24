@@ -12,6 +12,8 @@ public class CarEntity {
 
     private String make;
     private String model;
+
+    @Enumerated(EnumType.STRING)
     private CarType carType;
 
     public String getModel() {
