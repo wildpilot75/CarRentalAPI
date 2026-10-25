@@ -5,6 +5,7 @@ import com.crd.car_rental.model.CarType;
 import com.crd.car_rental.service.ReservationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -71,8 +72,8 @@ public class ReservationController {
     @GetMapping("/car-unit/{carUnitId}/availability")
     public AvailabilityResponse checkUnitAvailability(
             @PathVariable Long carUnitId,
-            @RequestParam Date startDate,
-            @RequestParam Date endDate) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
 
         return reservationService.checkUnitAvailability(carUnitId, startDate, endDate);
     }
@@ -80,8 +81,8 @@ public class ReservationController {
     @GetMapping("/car-entity/{carEntityId}/availability")
     public AvailabilityResponse checkEntityAvailability(
             @PathVariable Long carEntityId,
-            @RequestParam Date startDate,
-            @RequestParam Date endDate) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
 
         return reservationService.checkEntityAvailability(carEntityId, startDate, endDate);
     }
@@ -89,8 +90,8 @@ public class ReservationController {
     @GetMapping("/car-type/{carType}/availability")
     public AvailabilityResponse checkEntityAvailability(
             @PathVariable CarType carType,
-            @RequestParam Date startDate,
-            @RequestParam Date endDate) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
 
         return reservationService.checkEntityAvailability(carType, startDate, endDate);
     }

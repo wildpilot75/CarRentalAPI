@@ -118,6 +118,20 @@ public class ReservationService {
         CarUnitEntity unit = carUnitRepository.findById(request.carUnitId())
                 .orElseThrow(() -> new NotFoundException("Car unit not found"));
 
+        List<ReservationEntity> overlaps =
+                reservationRepository.findOverlappingReservationsForUnit(
+                        unit.getId(),
+                        request.startDate(),
+                        request.endDate()
+                );
+
+        if (!overlaps.isEmpty()) {
+            throw new ReservationOverlapException(
+                    "Car unit " + unit.getId() + " has conflicting reservations: " +
+                            overlaps.stream().map(ReservationEntity::getId).toList()
+            );
+        }
+
         entity.setCarUnit(unit);
         entity.setStartDate(request.startDate());
         entity.setEndDate(request.endDate());
