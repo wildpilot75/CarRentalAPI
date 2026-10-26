@@ -72,27 +72,27 @@ public class ReservationController {
     @GetMapping("/car-unit/{carUnitId}/availability")
     public AvailabilityResponse checkUnitAvailability(
             @PathVariable Long carUnitId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDateTime,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDateTime) {
 
-        return reservationService.checkUnitAvailability(carUnitId, startDate, endDate);
+        return reservationService.checkUnitAvailability(carUnitId, startDateTime, endDateTime);
     }
 
     @GetMapping("/car-entity/{carEntityId}/availability")
     public AvailabilityResponse checkEntityAvailability(
             @PathVariable Long carEntityId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDateTime,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDateTime) {
 
-        return reservationService.checkEntityAvailability(carEntityId, startDate, endDate);
+        return reservationService.checkEntityAvailability(carEntityId, startDateTime, endDateTime);
     }
 
     @GetMapping("/car-type/{carType}/availability")
     public AvailabilityResponse checkEntityAvailability(
             @PathVariable CarType carType,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDateTime,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDateTime) {
 
-        return reservationService.checkEntityAvailability(carType, startDate, endDate);
+        return reservationService.checkEntityAvailability(carType, startDateTime, endDateTime);
     }
 }
