@@ -1,6 +1,5 @@
-📘 Car Rental REST API — README
-🚀 Overview
-This project is a Car Rental REST API built using:
+📘 Car Rental REST API
+A modern, fully tested Car Rental REST API built with:
 
 Spring Framework 7
 
@@ -10,119 +9,98 @@ Java 25
 
 H2 in‑memory database
 
-It follows a layered architecture (Controller → Service → Repository → Model) and provides a clean, maintainable structure for building scalable REST applications.
+The project follows a clean layered architecture and includes complete unit tests, integration tests, and Swagger documentation for easy exploration.
 
-The API supports:
+🚀 Features
+Manage cars, car units, and reservations
 
-Managing cars and car units
+Check availability by car unit, car entity, or car type
 
-Creating and updating reservations
+Custom validation (date validation, selector validation)
 
-Checking availability
+Global exception handling
 
-Querying reservations by car, unit, or type
+In‑memory H2 database for fast development and testing
 
-All endpoints are fully tested using unit tests and integration tests.
+Swagger UI for interactive API exploration
 
 🧱 Architecture
-The project uses a classic layered approach:
+This project uses a classic layered approach:
 
-1. API Layer (Controllers)
-Handles HTTP requests and responses.
-Uses Spring MVC annotations and integrates with validation and exception handling.
+API Layer
+Spring MVC controllers handling HTTP requests and responses.
 
-2. Service Layer
-Contains business logic:
+Service Layer
+Business logic:
 
-Reservation creation rules
+Reservation creation
 
 Overlap detection
 
 Availability checks
 
-Car and unit selection logic
+Car/unit access
 
-3. Repository Layer
-Uses Spring Data JPA to interact with the H2 database.
+Repository Layer
+Spring Data JPA repositories interacting with H2.
 
-4. Model Layer
-Defines JPA entities for:
+Model Layer
+JPA entities for Car, CarUnit, Reservation.
 
-Car
+DTO Layer
+Request/response objects with validation annotations.
 
-CarUnit
-
-Reservation
-
-5. DTO Layer
-Provides request/response objects with validation annotations.
-
-6. Validation Layer
-Custom validators such as:
+Validation Layer
+Custom validators:
 
 @ValidReservationDates
 
-@ValidCarSelector
-
-7. Global Exception Handling
-A centralized GlobalExceptionHandler ensures consistent error responses.
+Global Exception Handling
+Consistent error responses via GlobalExceptionHandler.
 
 🧪 Testing
-The project includes:
+The API is fully tested using:
 
 ✔ Unit Tests
-Controller tests using MockMvc
+Controllers (MockMvc)
 
-Service tests using Mockito
+Services (Mockito)
 
-Validator tests
+Validators
 
 ✔ Integration Tests
+Full Spring Boot context
 
-H2 in‑memory database
+Real H2 database
 
-This ensures both correctness and stability across layers.
+Repository behavior
 
 🗄️ Database
-The application uses H2 in‑memory database, which means:
-
-No external DB setup required
-
-Data seeded using DataSeeder and resets on each application restart
+The application uses H2 in‑memory database, which requires no external setup.
 
 📚 API Documentation (Swagger)
-Swagger UI is enabled through Springdoc OpenAPI.
+Swagger UI is available at:
 
-Once the application is running, explore the API at:
-
-Code
 http://localhost:8080/swagger-ui/index.html
-This provides:
 
-Interactive API documentation
-
-Example requests
-
-Schema definitions
-
-Ability to test endpoints directly in the browser
+You can explore all endpoints, send test requests, and view schema definitions.
+Please Note that you need to use time stamp NOT date for api/reservations endpoints
 
 ▶️ Running the Application
 Prerequisites
-Java 25 installed
+Java 25
 
-Maven or Gradle
-
-Run using Maven
-Code
+Maven
+Run with Maven
+bash
 mvn spring-boot:run
 
-The application starts on:
+Application starts at:
 
-Code
 http://localhost:8080
 📂 Project Structure
-Code
+
+<pre>
 src/main/java/com/crd/car_rental
 │
 ├── api/                 # Controllers
@@ -132,12 +110,15 @@ src/main/java/com/crd/car_rental
 ├── repository/          # Spring Data repositories
 ├── service/             # Business logic
 └── validation/          # Custom validators
+</pre>
+
 🧩 Technologies Used
-Component	Version
-Spring Framework	7.x
-Spring Boot	4.1.1
-Java	25
-H2 Database	In‑memory
-Springdoc OpenAPI	3.1.0
-JUnit 5	✔
-Mockito	✔
+| Component | Version |
+| --- | --- |
+| Spring Framework | 7.x |
+| Spring Boot | 4.1.1 |
+| Java | 25 |
+| H2 Database | In‑memory |
+| Springdoc OpenAPI | 3.1.0 |
+| JUnit 5 | ✔ |
+| Mockito | ✔ |
